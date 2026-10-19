@@ -2,7 +2,7 @@
 
 **Paste broken JSON and get valid JSON back, with an explanation for every fix and typed models for TypeScript, C#, Dart and JSON Schema. It all runs in your browser.**
 
-**Live demo:** https://&lt;github-username&gt;.github.io/json-surgeon/
+**Live demo:** https://uvilleramente.github.io/json-surgeon/
 
 ![JSON Surgeon repairing an LLM response: the input on the left with every fix highlighted, the list of fixes below it, and the repaired JSON on the right](docs/screenshot.png)
 
