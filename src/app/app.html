@@ -1,0 +1,97 @@
+<header class="app-header">
+  <div class="brand">
+    <span class="logo"><app-icon name="logo" /></span>
+    <div class="brand-text">
+      <h1>JSON Surgeon</h1>
+      <p class="tagline">Repair broken JSON, see every fix, generate typed models.</p>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <span class="privacy" title="Parsing, repairs and code generation all run locally. Nothing is uploaded.">
+      <app-icon name="shield" /> <span>100% in your browser</span>
+    </span>
+    <label class="select-wrap">
+      <span class="sr-only">Load an example</span>
+      <select class="btn" (change)="onExampleSelected($event)" aria-label="Load an example">
+        <option value="" selected>Load example…</option>
+        @for (ex of examples; track ex.id) {
+          <option [value]="ex.id">{{ ex.label }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="btn btn-primary" (click)="share()" title="Copy a link that contains your input (compressed in the URL)">
+      <app-icon name="share" /><span>Share</span>
+    </button>
+    <button
+      type="button"
+      class="btn btn-icon"
+      (click)="theme.toggle()"
+      [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+      [title]="theme.theme() === 'dark' ? 'Light theme' : 'Dark theme'"
+    >
+      <app-icon [name]="theme.theme() === 'dark' ? 'sun' : 'moon'" />
+    </button>
+  </div>
+</header>
+
+<main class="workspace">
+  <section class="panel input-panel" aria-label="Input">
+    <app-input-editor
+      [value]="input()"
+      [repairs]="result()?.repairs ?? []"
+      [activeIndex]="activeRepair()"
+      [fileName]="fileName()"
+      (valueChange)="onInputChange($event)"
+      (fileLoaded)="onFileLoaded($event)"
+    >
+      <label editorOptions class="check" title="Treat JSON Lines / concatenated values as one array instead of keeping only the first">
+        <input type="checkbox" [checked]="multipleValues() === 'array'" (change)="toggleMultipleValues()" />
+        <span>Wrap multiple values in an array</span>
+      </label>
+    </app-input-editor>
+  </section>
+
+  <section class="panel fixes-panel" aria-label="Fixes">
+    <app-repair-list
+      [repairs]="result()?.repairs ?? []"
+      [activeIndex]="activeRepair()"
+      [summary]="result()?.summary ?? ''"
+      [valid]="result()?.valid ?? false"
+      [error]="result()?.error"
+      [busy]="busy()"
+      [progress]="progress()"
+      (selectRepair)="onSelectRepair($event)"
+    />
+  </section>
+
+  <section class="panel output-panel" aria-label="Output">
+    <app-output-panel
+      [output]="output()"
+      [shape]="result()?.shape ?? null"
+      [busy]="busy()"
+      [(tab)]="tab"
+      [(indent)]="indent"
+      [(sortKeys)]="sortKeys"
+      [(rootName)]="rootName"
+      [(namespace)]="namespace"
+    />
+  </section>
+</main>
+
+<footer class="app-footer">
+  <span>{{ status() }}</span>
+  <span>
+    Open source (MIT) · built by Andrésnael Acevedo De La Cruz · your data never leaves this tab
+  </span>
+</footer>
+
+<div class="toasts" aria-live="polite">
+  @for (t of toasts.toasts(); track t.id) {
+    <div class="toast {{ t.tone }}" role="status">
+      <app-icon [name]="t.tone === 'error' ? 'alert' : 'check'" />
+      <span>{{ t.message }}</span>
+      <button type="button" class="btn-icon-sm" (click)="toasts.dismiss(t.id)" aria-label="Dismiss"><app-icon name="x" /></button>
+    </div>
+  }
+</div>

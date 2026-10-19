@@ -1,0 +1,82 @@
+<header class="panel-header">
+  <div class="panel-title">
+    <h2>Fixes</h2>
+    @if (busy()) {
+      <span class="status busy" role="status">
+        <span class="spinner"></span>
+        Analyzing{{ progress() !== null ? ' ' + percent() + '%' : '…' }}
+      </span>
+    } @else if (error()) {
+      <span class="status error"><app-icon name="alert" /> {{ error() }}</span>
+    } @else if (valid()) {
+      <span class="status ok"><app-icon name="check" /> {{ summary() }}</span>
+    } @else if (repairs().length) {
+      <span class="status warn"><app-icon name="sparkles" /> {{ summary() }}</span>
+    }
+  </div>
+</header>
+
+@if (busy() && progress() !== null) {
+  <div class="progress" aria-hidden="true"><div class="bar" [style.width.%]="(progress() ?? 0) * 100"></div></div>
+}
+
+@if (categories().length > 1) {
+  <div class="chips" role="toolbar" aria-label="Filter fixes by category">
+    @for (c of categories(); track c.category) {
+      <button
+        type="button"
+        class="chip cat-{{ c.category }}"
+        [class.on]="filter() === c.category"
+        [attr.aria-pressed]="filter() === c.category"
+        (click)="toggleFilter(c.category)"
+      >
+        <app-icon [name]="icons[c.category]" /> {{ categoryLabels[c.category] }} <b>{{ c.count }}</b>
+      </button>
+    }
+  </div>
+}
+
+@if (rows().length) {
+  <ol class="list">
+    @for (row of filtered(); track row.index) {
+      <li>
+        <button
+          type="button"
+          class="item cat-{{ row.category }}"
+          [class.active]="row.index === activeIndex()"
+          (click)="selectRepair.emit(row.index)"
+          [attr.aria-current]="row.index === activeIndex() ? 'true' : null"
+        >
+          <span class="badge"><app-icon [name]="icons[row.category]" /></span>
+          <span class="body">
+            <span class="top">
+              <span class="label">{{ row.label }}</span>
+              <span class="pos">Ln {{ row.repair.line }}, Col {{ row.repair.column }}</span>
+            </span>
+            <span class="message">{{ row.repair.message }}</span>
+            @if (row.repair.before !== row.repair.after && (row.repair.before.length < 60 || row.repair.after)) {
+              <span class="diff">
+                <code class="before">{{ display(row.repair.before) }}</code>
+                <span class="arrow">→</span>
+                <code class="after">{{ display(row.repair.after) }}</code>
+              </span>
+            }
+          </span>
+        </button>
+      </li>
+    }
+  </ol>
+  @if (hidden()) {
+    <p class="more small muted">…and {{ hidden() }} more. The output already includes every fix.</p>
+  }
+} @else if (!busy() && !error()) {
+  <div class="empty">
+    @if (valid()) {
+      <app-icon name="shield" />
+      <p><strong>Valid JSON — no repairs needed.</strong><br /><span class="muted">Generate typed models from it on the right.</span></p>
+    } @else {
+      <app-icon name="sparkles" />
+      <p class="muted">Paste something broken and every fix will be explained here.</p>
+    }
+  </div>
+}

@@ -1,0 +1,48 @@
+<header class="panel-header">
+  <div class="panel-title">
+    <h2>Input</h2>
+    <span class="muted small">{{ fileName() ?? stats() }}</span>
+    @if (fileName()) {
+      <span class="muted small hide-sm">· {{ stats() }}</span>
+    }
+  </div>
+  <div class="panel-actions">
+    <ng-content select="[editorOptions]" />
+    <button type="button" class="btn btn-ghost" (click)="openFilePicker()" title="Open a file from your computer">
+      <app-icon name="folder" /><span class="hide-sm">Open file</span>
+    </button>
+    <button type="button" class="btn btn-ghost" (click)="clear()" [disabled]="!value()" title="Clear input">
+      <app-icon name="x" /><span class="hide-sm">Clear</span>
+    </button>
+    <input #fileInput type="file" accept=".json,.jsonl,.ndjson,.txt,.js,.ts,.py,.md,application/json,text/*" hidden (change)="onFilePicked($event)" />
+  </div>
+</header>
+
+<div
+  class="editor"
+  [class.dragging]="dragging()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+  <div #backdrop class="layer backdrop" aria-hidden="true" [innerHTML]="markedHtml()"></div>
+  <textarea
+    #textarea
+    class="layer textarea"
+    spellcheck="false"
+    autocomplete="off"
+    autocapitalize="off"
+    wrap="off"
+    aria-label="JSON input"
+    placeholder="Paste broken JSON, an LLM reply, a Python dict or a JS object… or drop a file here."
+    [value]="value()"
+    (input)="onInput($event)"
+    (scroll)="syncScroll()"
+  ></textarea>
+  @if (dragging()) {
+    <div class="drop-hint"><app-icon name="download" /> Drop a file to load it</div>
+  }
+</div>
+@if (!highlightEnabled()) {
+  <p class="note small muted">Large input: in-editor highlights are off. Click a fix to jump to it.</p>
+}

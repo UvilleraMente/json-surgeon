@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSON Surgeon — repair broken JSON and explain every fix</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Repair broken JSON (LLM output, Python dicts, JS objects, truncated responses), see every fix explained, and generate TypeScript, C#, Dart and JSON Schema models. 100% client-side."
+    />
+    <meta name="theme-color" content="#5b5bf6" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script>
+      // Apply a saved theme before first paint to avoid a flash.
+      try {
+        var t = localStorage.getItem('json-surgeon:theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+    <noscript>JSON Surgeon needs JavaScript: everything runs locally in your browser.</noscript>
+  </body>
+</html>

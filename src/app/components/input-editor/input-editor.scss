@@ -1,0 +1,120 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.editor {
+  position: relative;
+  flex: 1;
+  min-height: 260px;
+  border-top: 1px solid var(--border);
+  background: var(--editor-bg);
+  overflow: hidden;
+
+  &.dragging {
+    outline: 2px dashed var(--accent);
+    outline-offset: -6px;
+  }
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 14px 16px 28px;
+  border: 0;
+  font: var(--mono-size) / var(--mono-line) var(--font-mono);
+  tab-size: 2;
+  white-space: pre;
+  overflow-wrap: normal;
+  letter-spacing: 0;
+}
+
+.backdrop {
+  overflow: hidden;
+  color: transparent;
+  pointer-events: none;
+
+  ::ng-deep .mark {
+    color: transparent;
+    border-radius: 3px;
+    background: var(--mark-bg);
+    box-shadow: 0 0 0 1px var(--mark-ring);
+
+    &.insert {
+      display: inline-block;
+      width: 0;
+      height: var(--mono-line);
+      vertical-align: top;
+      box-shadow: none;
+      border-left: 2px solid var(--mark-insert);
+      margin-left: -2px; // net width 0: text never shifts, and an end-of-line caret stays in view
+      border-radius: 0;
+    }
+
+    &.active {
+      background: var(--mark-active-bg);
+      box-shadow: 0 0 0 2px var(--accent);
+      animation: pulse 0.9s ease-out 2;
+
+      &.insert {
+        border-left-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent);
+      }
+    }
+  }
+}
+
+.textarea {
+  width: 100%;
+  height: 100%;
+  resize: none;
+  overflow: auto;
+  background: transparent;
+  color: var(--text);
+  caret-color: var(--accent);
+  outline: none;
+
+  &::placeholder {
+    color: var(--text-muted);
+    white-space: pre-wrap;
+  }
+
+  &::selection {
+    background: var(--selection);
+  }
+}
+
+.drop-hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  pointer-events: none;
+}
+
+.note {
+  margin: 0;
+  padding: 6px 16px;
+  border-top: 1px solid var(--border);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent);
+  }
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop ::ng-deep .mark.active {
+    animation: none;
+  }
+}

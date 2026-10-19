@@ -1,0 +1,76 @@
+<header class="panel-header tabs-header">
+  <div class="tabs" role="tablist" aria-label="Output format">
+    @for (t of tabs; track t.id) {
+      <button
+        type="button"
+        role="tab"
+        class="tab"
+        [class.on]="tab() === t.id"
+        [attr.aria-selected]="tab() === t.id"
+        (click)="tab.set(t.id)"
+      >
+        {{ t.label }}
+      </button>
+    }
+  </div>
+</header>
+
+<div class="toolbar">
+  @if (tab() === 'json') {
+    <label class="field">
+      <span>Indent</span>
+      <select (change)="onIndentChange($event)">
+        @for (o of indentOptions; track o.value) {
+          <option [value]="'' + o.value" [selected]="o.value === indent()">{{ o.label }}</option>
+        }
+      </select>
+    </label>
+    <label class="check">
+      <input type="checkbox" [checked]="sortKeys()" (change)="sortKeys.set(!sortKeys())" />
+      <span>Sort keys</span>
+    </label>
+  } @else {
+    <label class="field">
+      <span>Root name</span>
+      <input
+        class="narrow"
+        type="text"
+        spellcheck="false"
+        [value]="rootName()"
+        (input)="rootName.set(inputValue($event))"
+        placeholder="Root"
+        aria-label="Root type name"
+      />
+    </label>
+    @if (tab() === 'csharp') {
+      <label class="field">
+        <span>Namespace</span>
+        <input type="text" spellcheck="false" [value]="namespace()" (input)="namespace.set(inputValue($event))" />
+      </label>
+    }
+  }
+  <span class="spacer"></span>
+  @if (tab() !== 'csharp') {
+    <span class="muted small hide-sm">{{ size() }}</span>
+  }
+  <button type="button" class="btn btn-ghost" (click)="copy()" [disabled]="!text()" title="Copy to clipboard">
+    <app-icon name="copy" /><span>Copy</span>
+  </button>
+  <button type="button" class="btn btn-ghost" (click)="download()" [disabled]="!text()" [title]="'Download ' + fileName()">
+    <app-icon name="download" /><span class="hide-sm">Download</span>
+  </button>
+</div>
+
+<div class="code-wrap" [class.dim]="busy()">
+  @if (text()) {
+    <pre class="code" tabindex="0" [attr.aria-label]="'Output: ' + tab()"><code [innerHTML]="html()"></code></pre>
+  } @else {
+    <div class="placeholder muted">The repaired JSON and generated models will appear here.</div>
+  }
+  @if (busy()) {
+    <div class="busy-overlay"><span class="spinner big"></span></div>
+  }
+</div>
+@if (truncated()) {
+  <p class="note small muted">Preview shows the first 200 KB. Copy and Download include everything.</p>
+}
